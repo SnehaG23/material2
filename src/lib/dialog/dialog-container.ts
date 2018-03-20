@@ -19,17 +19,17 @@ import {
   ViewEncapsulation,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import {DOCUMENT} from '@angular/common';
-import {AnimationEvent} from '@angular/animations';
-import {matDialogAnimations} from './dialog-animations';
+import { DOCUMENT } from '@angular/common';
+import { AnimationEvent } from '@angular/animations';
+import { matDialogAnimations } from './dialog-animations';
 import {
   BasePortalOutlet,
   ComponentPortal,
   CdkPortalOutlet,
   TemplatePortal
 } from '@angular/cdk/portal';
-import {FocusTrap, FocusTrapFactory} from '@angular/cdk/a11y';
-import {MatDialogConfig} from './dialog-config';
+import { FocusTrap, FocusTrapFactory } from '@angular/cdk/a11y';
+import { MatDialogConfig } from './dialog-config';
 
 
 /**
@@ -64,7 +64,7 @@ export function throwMatDialogContentAlreadyAttachedError() {
     '[attr.aria-labelledby]': '_config?.ariaLabel ? null : _ariaLabelledBy',
     '[attr.aria-label]': '_config?.ariaLabel',
     '[attr.aria-describedby]': '_config?.ariaDescribedBy || null',
-    '[@slideDialog]': '_state',
+    '[@slideDialog]': '_config?.animation ? _state || void',
     '(@slideDialog.start)': '_onAnimationStart($event)',
     '(@slideDialog.done)': '_onAnimationDone($event)',
   },
@@ -174,18 +174,21 @@ export class MatDialogContainer extends BasePortalOutlet {
 
   /** Callback, invoked whenever an animation on the host completes. */
   _onAnimationDone(event: AnimationEvent) {
-    if (event.toState === 'enter') {
-      this._trapFocus();
-    } else if (event.toState === 'exit') {
-      this._restoreFocus();
+    if (this._config.animation) {
+      if (event.toState === 'enter') {
+        this._trapFocus();
+      } else if (event.toState === 'exit') {
+        this._restoreFocus();
+      }
+      this._animationStateChanged.emit(event);
     }
-
-    this._animationStateChanged.emit(event);
   }
 
   /** Callback, invoked when an animation on the host starts. */
   _onAnimationStart(event: AnimationEvent) {
-    this._animationStateChanged.emit(event);
+    if (this._config.animation) {
+      this._animationStateChanged.emit(event);
+    }
   }
 
   /** Starts the dialog exit animation. */

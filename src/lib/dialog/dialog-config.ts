@@ -101,5 +101,7 @@ export class MatDialogConfig<D = any> {
   /** Whether the dialog should close when the user goes backwards/forwards in history. */
   closeOnNavigation?: boolean = true;
 
+  animation?: boolean = true;
+
   // TODO(jelbourn): add configuration for lifecycle hooks, ARIA labelling.
 }
